@@ -21,6 +21,7 @@ public class Lab4 extends JFrame{
     private JSpinner rSpinner;
     private JTextField pTextField;
     private Double R;
+    private GeneralSilhouette gsh;
     GraphPanel theGraphPanel;
 
     private ArrayList<Point> points = new ArrayList<>();
@@ -60,6 +61,7 @@ public class Lab4 extends JFrame{
 
         xComboBox = getComboBoxForX();
         thePanel.add(xComboBox);
+        xComboBox.addActionListener(new ComboBoxListener());
         theBox.add(thePanel);
 
         //UI components for y
@@ -122,6 +124,7 @@ public class Lab4 extends JFrame{
     private JSpinner getSpinnerForR() {
         JSpinner rSpinner = new JSpinner();
         rSpinner.setValue(10);
+        gsh = new GeneralSilhouette(10);
         rSpinner.setPreferredSize(new Dimension(100,20));
         return rSpinner;
     }
@@ -138,10 +141,18 @@ public class Lab4 extends JFrame{
         new Lab4();
     }
 
+    public static double getRealX(double x, double R){
+        return (x-100)*R/60;
+    }
+
+    public static double getRealY(double y, double R){
+        return (-y+100)*R/60;
+    }
+
     private class GraphPanelMouseListener implements MouseListener {
         @Override
         public void mouseClicked(MouseEvent e) {
-            ((GraphPanel)e.getSource()).showPoint(e.getX(),e.getY(),((GraphPanel)e.getSource()).getGraphics());
+            ((GraphPanel)e.getSource()).showPointAnimated(e.getX(),e.getY(),((GraphPanel)e.getSource()).getGraphics(),points,R,gsh);
             points.add(new Point((e.getX()-100)*R/60,(-e.getY()+100)*R/60));
             pTextField.setText("x = "+(e.getX()-100)*R/60+" ; y = "+(-e.getY()+100)*R/60);
         }
@@ -175,9 +186,9 @@ public class Lab4 extends JFrame{
             System.out.println("Changed");
             theGraphPanel.paint(theGraphPanel.getGraphics());
             R = ((Integer)((JSpinner)e.getSource()).getModel().getValue()).doubleValue();
-
+            gsh = new GeneralSilhouette(R);
             for (Point point : points){
-                theGraphPanel.showPoint((point.getX()*60)/R+100,(-point.getY()*60)/R+100,theGraphPanel.getGraphics());
+                theGraphPanel.showPoint((point.getX()*60)/R+100,(-point.getY()*60)/R+100,theGraphPanel.getGraphics(),gsh);
             }
         }
     }
@@ -186,13 +197,11 @@ public class Lab4 extends JFrame{
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            //System.out.println(((JCheckBox)e.getSource()).getText());
-            //System.out.println(((JCheckBox)e.getSource()).isSelected());
             double x = Double.parseDouble(xComboBox.getModel().getSelectedItem().toString());
             double y = Double.parseDouble(((JCheckBox)e.getSource()).getText());
 
             if (((JCheckBox)e.getSource()).isSelected()){
-                theGraphPanel.showPoint((x*60)/R+100,(-y*60)/R+100,theGraphPanel.getGraphics());
+                theGraphPanel.showPoint((x*60)/R+100,(-y*60)/R+100,theGraphPanel.getGraphics(),gsh);
                 points.add(new Point(x,y));
                 pTextField.setText("x = "+x+" ; y = "+y);
 
@@ -200,18 +209,21 @@ public class Lab4 extends JFrame{
         }
     }
 
-    private class Point {
-        private double x;
-        private double y;
-        public Point(double x, double y){
-            this.x = x;
-            this.y = y;
-        }
-        public double getX(){
-            return x;
-        }
-        public double getY(){
-            return y;
+    private class ComboBoxListener implements ActionListener{
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            double x = Double.parseDouble(((JComboBox)e.getSource()).getModel().getSelectedItem().toString());
+            double y = 0;
+
+            for(JCheckBox ycheckBox : yCheckBoxes) {
+                if (ycheckBox.isSelected()) {
+                    y = Double.parseDouble(ycheckBox.getText());
+                    theGraphPanel.showPoint((x * 60) / R + 100, (-y * 60) / R + 100, theGraphPanel.getGraphics(),gsh);
+                    points.add(new Point(x, y));
+                    pTextField.setText("x = " + x + " ; y = " + y);
+                }
+            }
         }
     }
 }

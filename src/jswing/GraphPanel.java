@@ -2,20 +2,47 @@ package jswing;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+
+import static jswing.Lab4.getRealX;
+import static jswing.Lab4.getRealY;
 
 /**
  * Created by Zerbs on 23.10.2016.
  */
 public class GraphPanel extends JPanel {
     private Graphics gContext;
+    public static final int BLUE = 0x0000FF;
+    public static final int YELLOW = 0xFFFF00;
+
+    private Color areaColor = new Color(BLUE);
+
+    public Color getAreaColor(){
+        return areaColor;
+    }
+
+    private int correctValue(int value, int lowbound, int highbound){
+        if (value < lowbound){
+            return lowbound;
+        }
+        if (value > highbound){
+             return highbound;
+        }
+        return value;
+    }
+    public void setAreaColor(int r, int g, int b){
+        areaColor = new Color(correctValue(r,0,255), correctValue(g,0,255), correctValue(b,0,255));
+    }
+
 
     public void paint(Graphics g){
         //Background
         g.setColor(new Color(0x48CC5E));
+
         g.fillRect(0,0,200,200);
 
         //Rectangle
-        g.setColor(new Color(0x2983CC));
+        g.setColor(areaColor);
         g.drawRect(100,100,-60,60);
 
         //Triangle
@@ -78,9 +105,30 @@ public class GraphPanel extends JPanel {
 
     }
 
-    public void showPoint(double x, double y, Graphics g){
+    public void showPoint(double x, double y, Graphics g, GeneralSilhouette gsh){
         if ((x >= 0) && (x <= 200) && (y>=0) && (y<=200)){
-            g.fillOval((int)x,(int)y,5,5);
+            if(gsh.checkPonto(new Ponto((float)getRealX(x,gsh.getR()),(float)getRealY(y,gsh.getR())))){
+                g.setColor(new Color(0x00FF00));
+            } else {
+                g.setColor(new Color(0xFF0000));
+            }
+
+            g.fillOval((int)x-2,(int)y-2,4,4);
         }
+    }
+
+    public void showPointAnimated(double x, double y, Graphics g, ArrayList<Point> points, double R,GeneralSilhouette gsh){
+        if ((x >= 0) && (x <= 200) && (y>=0) && (y<=200)){
+
+            if(gsh.checkPonto(new Ponto((float)getRealX(x,R),(float)getRealY(y,R)))){
+                g.setColor(new Color(0x00FF00));
+            } else {
+                g.setColor(new Color(0xFF0000));
+            }
+
+            g.fillOval((int)x-2,(int)y-2,4,4);
+        }
+        // animation
+        new AnimationThread(this,points,R,gsh).start();
     }
 }
