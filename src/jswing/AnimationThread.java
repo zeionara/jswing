@@ -1,8 +1,7 @@
 package jswing;
 
-import javax.swing.*;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Set;
 
 /**
  * Created by Zerbs on 25.10.2016.
@@ -14,33 +13,17 @@ public class AnimationThread extends Thread{
 
     private GraphPanel animatedGraphPanel;
 
-    public void setAnimatedGraphPanel(GraphPanel graphPanel){
-        animatedGraphPanel = graphPanel;
-    }
-
-    private ArrayList<Point> points;
-
-    public void setPoints(ArrayList<Point> points){
-        this.points = points;
-    }
+    private Set<Ponto> pontos;
 
     private double R;
 
-    public void setR(double R){
-        this.R = R;
-    }
-
     private GeneralSilhouette gsh;
 
-    public void setGeneralSilhouette(GeneralSilhouette gsh){
+    public AnimationThread(GraphPanel graphPanel, Set<Ponto> pontos, double R, GeneralSilhouette gsh){
+        animatedGraphPanel = graphPanel;
+        this.pontos = pontos;
+        this.R = R;
         this.gsh = gsh;
-    }
-
-    public AnimationThread(GraphPanel graphPanel, ArrayList<Point> points, double R, GeneralSilhouette gsh){
-        setAnimatedGraphPanel(graphPanel);
-        setPoints(points);
-        setR(R);
-        setGeneralSilhouette(gsh);
     }
 
     public void run(){
@@ -50,40 +33,26 @@ public class AnimationThread extends Thread{
 
         animatedGraphPanel.setAreaColor(r,g,b);
         while (r != 255){
-            r+=step;
-            g+=step;
-            b-=step;
-            animatedGraphPanel.setAreaColor(r,g,b);
-
-            animatedGraphPanel.paint(animatedGraphPanel.getGraphics());
-
-            for (Point point : points){
-                animatedGraphPanel.showPoint((point.getX()*60)/R+100,(-point.getY()*60)/R+100,animatedGraphPanel.getGraphics(),gsh);
-            }
-
-            try{
-                Thread.sleep(delay);
-            } catch (InterruptedException e){
-
-            }
+            draw(r+=step,g+=step,b-=step);
         }
         while (r != 0){
-            r-=step;
-            g-=step;
-            b+=step;
-            animatedGraphPanel.setAreaColor(r,g,b);
+            draw(r-=step,g-=step,b+=step);
+        }
+    }
 
-            animatedGraphPanel.paint(animatedGraphPanel.getGraphics());
+    private void draw(int r, int g, int b){
+        animatedGraphPanel.setAreaColor(r,g,b);
 
-            for (Point point : points){
-                animatedGraphPanel.showPoint((point.getX()*60)/R+100,(-point.getY()*60)/R+100,animatedGraphPanel.getGraphics(),gsh);
-            }
+        animatedGraphPanel.paint(animatedGraphPanel.getGraphics());
 
-            try{
-                Thread.sleep(delay);
-            } catch (InterruptedException e){
+        for (Ponto ponto : pontos){
+            animatedGraphPanel.showPonto(ponto,gsh);
+        }
 
-            }
+        try{
+            Thread.sleep(delay);
+        } catch (InterruptedException e){
+
         }
     }
 }

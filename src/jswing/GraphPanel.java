@@ -3,42 +3,24 @@ package jswing;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Set;
 
-import static jswing.Lab4.getRealX;
-import static jswing.Lab4.getRealY;
-
-/**
- * Created by Zerbs on 23.10.2016.
- */
 public class GraphPanel extends JPanel {
-    private Graphics gContext;
     public static final int BLUE = 0x0000FF;
-    public static final int YELLOW = 0xFFFF00;
+    public static final int SIZE_OF_GRAPH = 200;
+    public static final int SIZE_OF_POINT = 2;
+    public static final Color INNER_POINT_COLOR = Color.green;
+    public static final Color OUTER_POINT_COLOR = Color.red;
 
     private Color areaColor = new Color(BLUE);
 
-    public Color getAreaColor(){
-        return areaColor;
-    }
-
-    private int correctValue(int value, int lowbound, int highbound){
-        if (value < lowbound){
-            return lowbound;
-        }
-        if (value > highbound){
-             return highbound;
-        }
-        return value;
-    }
     public void setAreaColor(int r, int g, int b){
         areaColor = new Color(correctValue(r,0,255), correctValue(g,0,255), correctValue(b,0,255));
     }
 
-
     public void paint(Graphics g){
         //Background
         g.setColor(new Color(0x48CC5E));
-
         g.fillRect(0,0,200,200);
 
         //Rectangle
@@ -51,7 +33,7 @@ public class GraphPanel extends JPanel {
         Polygon triangle = new Polygon(txs,tys,3);
         g.fillPolygon(triangle);
 
-        //Segment of circle
+        //Circle
         g.fillArc(40,40,120,120,0,90);
 
         //Coordinates
@@ -93,11 +75,7 @@ public class GraphPanel extends JPanel {
         g.drawLine(98,40,102,40);
         g.drawString("R",105,45);
 
-
-
-        //g.drawLine(180,100,100,20);
-        //g.drawLine(100,180,100,20);
-
+        //Border
         g.drawLine(0,0,200,0);
         g.drawLine(0,0,0,200);
         g.drawLine(200,0,200,200);
@@ -105,30 +83,44 @@ public class GraphPanel extends JPanel {
 
     }
 
-    public void showPoint(double x, double y, Graphics g, GeneralSilhouette gsh){
-        if ((x >= 0) && (x <= 200) && (y>=0) && (y<=200)){
-            if(gsh.checkPonto(new Ponto((float)getRealX(x,gsh.getR()),(float)getRealY(y,gsh.getR())))){
-                g.setColor(new Color(0x00FF00));
-            } else {
-                g.setColor(new Color(0xFF0000));
-            }
-
-            g.fillOval((int)x-2,(int)y-2,4,4);
+    public void showPonto(Ponto p, GeneralSilhouette gsh){
+        if (isPontoOnGraph(p,gsh.getR())){
+            addPontoToGraph(p,getGraphics(),gsh);
         }
     }
 
-    public void showPointAnimated(double x, double y, Graphics g, ArrayList<Point> points, double R,GeneralSilhouette gsh){
-        if ((x >= 0) && (x <= 200) && (y>=0) && (y<=200)){
-
-            if(gsh.checkPonto(new Ponto((float)getRealX(x,R),(float)getRealY(y,R)))){
-                g.setColor(new Color(0x00FF00));
-            } else {
-                g.setColor(new Color(0xFF0000));
-            }
-
-            g.fillOval((int)x-2,(int)y-2,4,4);
+    public void showPontoAnimated(Ponto p, Set<Ponto> pontos, GeneralSilhouette gsh){
+        if (isPontoOnGraph(p,gsh.getR())){
+            addPontoToGraph(p,getGraphics(),gsh);
+            // animation
+            new AnimationThread(this,pontos,gsh.getR(),gsh).start();
         }
-        // animation
-        new AnimationThread(this,points,R,gsh).start();
+    }
+
+    private void addPontoToGraph(Ponto p, Graphics g, GeneralSilhouette gsh){
+        if(gsh.checkPonto(p)){
+            g.setColor(INNER_POINT_COLOR);
+        } else {
+            g.setColor(OUTER_POINT_COLOR);
+        }
+
+        g.fillOval((int)p.getGraphX(gsh.getR())-SIZE_OF_POINT,(int)p.getGraphY(gsh.getR())-SIZE_OF_POINT,SIZE_OF_POINT*2,SIZE_OF_POINT*2);
+    }
+
+    private boolean isPontoOnGraph(Ponto p, double R){
+        return (p.getGraphX(R) >= 0) &&
+                (p.getGraphX(R) <= SIZE_OF_GRAPH) &&
+                (p.getGraphY(R)>=0) &&
+                (p.getGraphY(R)<= SIZE_OF_GRAPH);
+    }
+
+    private int correctValue(int value, int lowbound, int highbound){
+        if (value < lowbound){
+            return lowbound;
+        }
+        if (value > highbound){
+            return highbound;
+        }
+        return value;
     }
 }

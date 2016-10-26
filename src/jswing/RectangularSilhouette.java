@@ -7,8 +7,8 @@ public class RectangularSilhouette extends Silhouette implements pontoCheckable{
     }
 
     public boolean checkPonto(Ponto p){
-        float x = p.getX();
-        float y = p.getY();
+        double x = p.getX();
+        double y = p.getY();
         double r = getR();
 
         return ((x > -r) && (x < 0)) && ((y > -r) && (y < 0));

@@ -7,8 +7,8 @@ public class TriangularSilhouette extends Silhouette implements pontoCheckable{
     }
 
     public boolean checkPonto(Ponto p){
-        float x = p.getX();
-        float y = p.getY();
+        double x = p.getX();
+        double y = p.getY();
 
         return (y > x - getR()/2) && (x >= 0) && (y <= 0);
     }

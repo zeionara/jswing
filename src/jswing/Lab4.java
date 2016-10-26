@@ -4,41 +4,48 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.time.format.TextStyle;
+import java.awt.event.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
  * Created by Zerbs on 22.10.2016.
  */
 public class Lab4 extends JFrame{
-    private JComboBox<Double> xComboBox;
-    private ArrayList<JCheckBox> yCheckBoxes;
-    private JSpinner rSpinner;
-    private JTextField pTextField;
+    private static final int DEFAULT_WINDOW_WIDTH = 1024;
+    private static final int DEFAULT_WINDOW_HEIGHT = 480;
+    private static final double DEFAULT_R = 10d;
+    private static final int DEFAULT_ELEMENT_WIDTH = 100;
+    private static final int DEFAULT_ELEMENT_HEIGHT = 20;
+
+    private JComboBox<Double> xComboBox;    //For entering x
+    private ArrayList<JCheckBox> yCheckBoxes;   //For entering y
+    private JSpinner rSpinner;  //For entering r
+    private JTextField pTextField;  //For showing ponto
+    private GraphPanel theGraphPanel;   //For showing graph
+
     private Double R;
     private GeneralSilhouette gsh;
-    GraphPanel theGraphPanel;
+    private Set<Ponto> pontos = new LinkedHashSet<>();
 
-    private ArrayList<Point> points = new ArrayList<>();
+    public static void main(String[] args) {
+        new Lab4();
+    }
 
     public Lab4()
     {
-
         // Initialization
         super();
-        R = 10d;
-        setSize(720, 480);
+
+        setSize(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setTitle("Fourth Lab");
         setResizable(false);
 
-        Box theBox = Box.createVerticalBox();
+        JPanel theMainPanel = new JPanel();
+        theMainPanel.setLayout(new GridLayout(0,3));
 
         JPanel thePanel = new JPanel();
         thePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -61,43 +68,45 @@ public class Lab4 extends JFrame{
 
         xComboBox = getComboBoxForX();
         thePanel.add(xComboBox);
-        xComboBox.addActionListener(new ComboBoxListener());
-        theBox.add(thePanel);
+        theMainPanel.add(thePanel);
 
         //UI components for y
         JLabel yLabel = new JLabel("Please, select y :");
         theSecondPanel.add(yLabel);
+
         yCheckBoxes = getCheckBoxesForY();
+
         for (JCheckBox checkBox : yCheckBoxes){
             theSecondPanel.add(checkBox);
         }
-        theBox.add(theSecondPanel);
+        theMainPanel.add(theSecondPanel);
 
         //UI components for R
         JLabel rLabel = new JLabel("Please, select R :");
-        rSpinner = getSpinnerForR();
         theThirdPanel.add(rLabel);
+
+        rSpinner = getSpinnerForR();
         theThirdPanel.add(rSpinner);
-        theBox.add(theThirdPanel);
-        rSpinner.addChangeListener(new SpinnerChangeListener());
+
+        theMainPanel.add(theThirdPanel);
 
         //UI components for point coordinates
         JLabel pLabel = new JLabel("Selected point :");
-        pTextField = getTextFieldForP();
         theFourthPanel.add(pLabel);
+
+        pTextField = getTextFieldForP();
         theFourthPanel.add(pTextField);
-        theBox.add(theFourthPanel);
+
+        theMainPanel.add(theFourthPanel);
 
         //UI components for graph
         theGraphPanel = new GraphPanel();
-        theGraphPanel.setPreferredSize(new Dimension(400,200));
-        theBox.add(theGraphPanel);
-
-
+        theGraphPanel.setPreferredSize(new Dimension(GraphPanel.SIZE_OF_GRAPH,GraphPanel.SIZE_OF_GRAPH));
         theGraphPanel.addMouseListener(new GraphPanelMouseListener());
 
-        add(theBox);
-        //add(theSecondPanel);
+        theMainPanel.add(theGraphPanel);
+        add(theMainPanel);
+
         setVisible(true);
     }
 
@@ -105,7 +114,8 @@ public class Lab4 extends JFrame{
         Double[] xs = {-4d, -3d, -2d, 0d, 1d, 2d, 3d, 4d};
         JComboBox<Double> jCB = new javax.swing.JComboBox<>(xs);
         jCB.setFont(new Font("Calibri",Font.PLAIN,12));
-        jCB.setPreferredSize(new Dimension(100,20));
+        jCB.setPreferredSize(new Dimension(DEFAULT_ELEMENT_WIDTH,DEFAULT_ELEMENT_HEIGHT));
+        jCB.addActionListener(new ComboBoxListener());
         return jCB;
     }
 
@@ -122,10 +132,12 @@ public class Lab4 extends JFrame{
     }
 
     private JSpinner getSpinnerForR() {
+        R = 10d;
         JSpinner rSpinner = new JSpinner();
-        rSpinner.setValue(10);
-        gsh = new GeneralSilhouette(10);
-        rSpinner.setPreferredSize(new Dimension(100,20));
+        rSpinner.setValue(R);
+        gsh = new GeneralSilhouette(R);
+        rSpinner.setPreferredSize(new Dimension(DEFAULT_ELEMENT_WIDTH,DEFAULT_ELEMENT_HEIGHT));
+        rSpinner.addChangeListener(new SpinnerChangeListener());
         return rSpinner;
     }
 
@@ -133,12 +145,8 @@ public class Lab4 extends JFrame{
         JTextField pTextField = new JTextField();
         pTextField.setEditable(false);
         pTextField.setText("None");
-        pTextField.setPreferredSize(new Dimension(300,20));
+        pTextField.setPreferredSize(new Dimension(DEFAULT_ELEMENT_WIDTH*3,DEFAULT_ELEMENT_HEIGHT));
         return pTextField;
-    }
-
-    public static void main(String[] args) {
-        new Lab4();
     }
 
     public static double getRealX(double x, double R){
@@ -149,46 +157,26 @@ public class Lab4 extends JFrame{
         return (-y+100)*R/60;
     }
 
-    private class GraphPanelMouseListener implements MouseListener {
+
+
+    private class GraphPanelMouseListener extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent e) {
-            ((GraphPanel)e.getSource()).showPointAnimated(e.getX(),e.getY(),((GraphPanel)e.getSource()).getGraphics(),points,R,gsh);
-            points.add(new Point((e.getX()-100)*R/60,(-e.getY()+100)*R/60));
-            pTextField.setText("x = "+(e.getX()-100)*R/60+" ; y = "+(-e.getY()+100)*R/60);
+            Ponto newPonto = new Ponto(getRealX(e.getX(),R),getRealY(e.getY(),R));
+            pontos.add(newPonto);
+            ((GraphPanel)e.getSource()).showPontoAnimated(newPonto,pontos,gsh);
+            pTextField.setText(newPonto.toString());
         }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseEntered(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseExited(MouseEvent e) {
-
-        }
-
     }
 
     private class SpinnerChangeListener implements ChangeListener{
-
         @Override
         public void stateChanged(ChangeEvent e) {
-            System.out.println("Changed");
             theGraphPanel.paint(theGraphPanel.getGraphics());
             R = ((Integer)((JSpinner)e.getSource()).getModel().getValue()).doubleValue();
             gsh = new GeneralSilhouette(R);
-            for (Point point : points){
-                theGraphPanel.showPoint((point.getX()*60)/R+100,(-point.getY()*60)/R+100,theGraphPanel.getGraphics(),gsh);
+            for (Ponto ponto : pontos){
+                theGraphPanel.showPonto(ponto,gsh);
             }
         }
     }
@@ -197,33 +185,52 @@ public class Lab4 extends JFrame{
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            boolean added = false;
             double x = Double.parseDouble(xComboBox.getModel().getSelectedItem().toString());
             double y = Double.parseDouble(((JCheckBox)e.getSource()).getText());
+            Ponto newPonto = new Ponto(x,y);
 
-            if (((JCheckBox)e.getSource()).isSelected()){
-                theGraphPanel.showPoint((x*60)/R+100,(-y*60)/R+100,theGraphPanel.getGraphics(),gsh);
-                points.add(new Point(x,y));
-                pTextField.setText("x = "+x+" ; y = "+y);
-
+            if (((JCheckBox)e.getSource()).isSelected() && !findPonto(pontos,newPonto)){
+                    pontos.add(newPonto);
+                    pTextField.setText(newPonto.toString());
+                    added = true;
+            }
+            if (added){
+                theGraphPanel.showPontoAnimated(newPonto,pontos,gsh);
             }
         }
     }
 
     private class ComboBoxListener implements ActionListener{
-
         @Override
         public void actionPerformed(ActionEvent e) {
+            boolean added = false;
+
             double x = Double.parseDouble(((JComboBox)e.getSource()).getModel().getSelectedItem().toString());
             double y = 0;
+            Ponto newPonto = new Ponto(x,y);
 
             for(JCheckBox ycheckBox : yCheckBoxes) {
-                if (ycheckBox.isSelected()) {
-                    y = Double.parseDouble(ycheckBox.getText());
-                    theGraphPanel.showPoint((x * 60) / R + 100, (-y * 60) / R + 100, theGraphPanel.getGraphics(),gsh);
-                    points.add(new Point(x, y));
-                    pTextField.setText("x = " + x + " ; y = " + y);
+                y = Double.parseDouble(ycheckBox.getText());
+                newPonto = new Ponto(x,y);
+                if (ycheckBox.isSelected() && !findPonto(pontos,newPonto)) {
+                    pontos.add(newPonto);
+                    added = true;
+                    pTextField.setText(newPonto.toString());
                 }
             }
+            if (added){
+                theGraphPanel.showPontoAnimated(newPonto,pontos,gsh);
+            }
         }
+    }
+
+    boolean findPonto(Set<Ponto> pontos, Ponto p){
+        for(Ponto ponto : pontos){
+            if (ponto.equals(p)){
+                return true;
+            }
+        }
+        return false;
     }
 }
