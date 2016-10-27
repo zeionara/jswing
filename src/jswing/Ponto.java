@@ -27,11 +27,11 @@ public class Ponto {
     }
 
     public double getGraphX(double R){
-        return (x*60)/R+100;
+        return (x*GraphPanel.GRAPHICAL_R)/R+GraphPanel.OFFSET_TO_CENTER;
     }
 
     public double getGraphY(double R){
-        return (-y*60)/R+100;
+        return (-y*GraphPanel.GRAPHICAL_R)/R+GraphPanel.OFFSET_TO_CENTER;
     }
 
     public boolean equals(Object obj){
@@ -48,6 +48,6 @@ public class Ponto {
     }
 
     public String toString(){
-        return ("Ponto { "+x+" ; "+y+" }");
+        return (x+" ; "+y);
     }
 }

@@ -9,9 +9,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-/**
- * Created by Zerbs on 22.10.2016.
- */
 public class Lab4 extends JFrame{
     private static final int DEFAULT_WINDOW_WIDTH = 1024;
     private static final int DEFAULT_WINDOW_HEIGHT = 480;
@@ -47,57 +44,50 @@ public class Lab4 extends JFrame{
         JPanel theMainPanel = new JPanel();
         theMainPanel.setLayout(new GridLayout(0,3));
 
-        JPanel thePanel = new JPanel();
-        thePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        JPanel thePanelX = newPanelFlowLeft();
 
-        JPanel theSecondPanel = new JPanel();
-        theSecondPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        JPanel thePanelY = newPanelFlowLeft();
 
-        JPanel theThirdPanel = new JPanel();
-        theThirdPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        JPanel thePanelR = newPanelFlowLeft();
 
-        JPanel theFourthPanel = new JPanel();
-        theFourthPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-
-        JPanel thePanel2 = new JPanel();
-        thePanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        JPanel thePanelPoint = newPanelFlowLeft();
 
         //UI components for x
         JLabel xLabel = new JLabel("Please, select x :");
-        thePanel.add(xLabel);
+        thePanelX.add(xLabel);
 
         xComboBox = getComboBoxForX();
-        thePanel.add(xComboBox);
-        theMainPanel.add(thePanel);
+        thePanelX.add(xComboBox);
+        theMainPanel.add(thePanelX);
 
         //UI components for y
         JLabel yLabel = new JLabel("Please, select y :");
-        theSecondPanel.add(yLabel);
+        thePanelY.add(yLabel);
 
         yCheckBoxes = getCheckBoxesForY();
 
         for (JCheckBox checkBox : yCheckBoxes){
-            theSecondPanel.add(checkBox);
+            thePanelY.add(checkBox);
         }
-        theMainPanel.add(theSecondPanel);
+        theMainPanel.add(thePanelY);
 
         //UI components for R
         JLabel rLabel = new JLabel("Please, select R :");
-        theThirdPanel.add(rLabel);
+        thePanelR.add(rLabel);
 
         rSpinner = getSpinnerForR();
-        theThirdPanel.add(rSpinner);
+        thePanelR.add(rSpinner);
 
-        theMainPanel.add(theThirdPanel);
+        theMainPanel.add(thePanelR);
 
         //UI components for point coordinates
         JLabel pLabel = new JLabel("Selected point :");
-        theFourthPanel.add(pLabel);
+        thePanelPoint.add(pLabel);
 
         pTextField = getTextFieldForP();
-        theFourthPanel.add(pTextField);
+        thePanelPoint.add(pTextField);
 
-        theMainPanel.add(theFourthPanel);
+        theMainPanel.add(thePanelPoint);
 
         //UI components for graph
         theGraphPanel = new GraphPanel();
@@ -108,6 +98,12 @@ public class Lab4 extends JFrame{
         add(theMainPanel);
 
         setVisible(true);
+    }
+
+    private JPanel newPanelFlowLeft(){
+        JPanel theNewPanel = new JPanel();
+        theNewPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+        return theNewPanel;
     }
 
     private javax.swing.JComboBox<Double> getComboBoxForX() {
@@ -132,7 +128,7 @@ public class Lab4 extends JFrame{
     }
 
     private JSpinner getSpinnerForR() {
-        R = 10d;
+        R = DEFAULT_R;
         JSpinner rSpinner = new JSpinner();
         rSpinner.setValue(R);
         gsh = new GeneralSilhouette(R);
@@ -150,14 +146,12 @@ public class Lab4 extends JFrame{
     }
 
     public static double getRealX(double x, double R){
-        return (x-100)*R/60;
+        return (x-GraphPanel.OFFSET_TO_CENTER)*R/GraphPanel.GRAPHICAL_R;
     }
 
     public static double getRealY(double y, double R){
-        return (-y+100)*R/60;
+        return (-y+GraphPanel.OFFSET_TO_CENTER)*R/GraphPanel.GRAPHICAL_R;
     }
-
-
 
     private class GraphPanelMouseListener extends MouseAdapter {
         @Override
@@ -185,7 +179,6 @@ public class Lab4 extends JFrame{
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            boolean added = false;
             double x = Double.parseDouble(xComboBox.getModel().getSelectedItem().toString());
             double y = Double.parseDouble(((JCheckBox)e.getSource()).getText());
             Ponto newPonto = new Ponto(x,y);
@@ -193,10 +186,7 @@ public class Lab4 extends JFrame{
             if (((JCheckBox)e.getSource()).isSelected() && !findPonto(pontos,newPonto)){
                     pontos.add(newPonto);
                     pTextField.setText(newPonto.toString());
-                    added = true;
-            }
-            if (added){
-                theGraphPanel.showPontoAnimated(newPonto,pontos,gsh);
+                    theGraphPanel.showPontoAnimated(newPonto,pontos,gsh);
             }
         }
     }

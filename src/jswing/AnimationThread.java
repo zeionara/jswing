@@ -1,11 +1,9 @@
 package jswing;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Set;
 
-/**
- * Created by Zerbs on 25.10.2016.
- */
 public class AnimationThread extends Thread{
 
     private int step = 51;
@@ -52,7 +50,7 @@ public class AnimationThread extends Thread{
         try{
             Thread.sleep(delay);
         } catch (InterruptedException e){
-
+            JOptionPane.showMessageDialog(null, "Error", "Animation thread interrupted", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
