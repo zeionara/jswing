@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class AnimationThread extends Thread{
 
-    private int step = 51;
+    private int step = 17;
     private int delay = 20;
 
     private GraphPanel animatedGraphPanel;

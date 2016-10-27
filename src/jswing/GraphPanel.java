@@ -100,20 +100,24 @@ public class GraphPanel extends JPanel {
 
     public void showPontoAnimated(Ponto p, Set<Ponto> pontos, GeneralSilhouette gsh){
         if (isPontoOnGraph(p,gsh.getR())){
-            addPontoToGraph(p,getGraphics(),gsh);
-            // animation
-            new AnimationThread(this,pontos,gsh.getR(),gsh).start();
+            //animation
+            if (addPontoToGraph(p,getGraphics(),gsh)){
+                new AnimationThread(this,pontos,gsh.getR(),gsh).start();
+            }
         }
     }
 
-    private void addPontoToGraph(Ponto p, Graphics g, GeneralSilhouette gsh){
+    private boolean addPontoToGraph(Ponto p, Graphics g, GeneralSilhouette gsh){
+        boolean inArea = false;
         if(gsh.checkPonto(p)){
             g.setColor(INNER_POINT_COLOR);
+            inArea = true;
         } else {
             g.setColor(OUTER_POINT_COLOR);
         }
 
         g.fillOval((int)p.getGraphX(gsh.getR())-SIZE_OF_POINT,(int)p.getGraphY(gsh.getR())-SIZE_OF_POINT,SIZE_OF_POINT*2,SIZE_OF_POINT*2);
+        return inArea;
     }
 
     private boolean isPontoOnGraph(Ponto p, double R){

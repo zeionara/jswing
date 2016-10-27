@@ -157,9 +157,11 @@ public class Lab4 extends JFrame{
         @Override
         public void mouseClicked(MouseEvent e) {
             Ponto newPonto = new Ponto(getRealX(e.getX(),R),getRealY(e.getY(),R));
-            pontos.add(newPonto);
-            ((GraphPanel)e.getSource()).showPontoAnimated(newPonto,pontos,gsh);
-            pTextField.setText(newPonto.toString());
+            if (!findPonto(pontos,newPonto)) {
+                pontos.add(newPonto);
+                ((GraphPanel) e.getSource()).showPontoAnimated(newPonto, pontos, gsh);
+                pTextField.setText(newPonto.toString());
+            }
         }
     }
 
