@@ -5,6 +5,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -26,6 +28,10 @@ public class Lab4 extends JFrame{
     private GeneralSilhouette gsh;
     private Set<Ponto> pontos = new LinkedHashSet<>();
 
+    private BufferedReader fromServerBuffer = null;
+    private PrintWriter toServerBuffer = null;
+    private Socket serverSocket = null;
+
     public static void main(String[] args) {
         new Lab4();
     }
@@ -34,6 +40,12 @@ public class Lab4 extends JFrame{
     {
         // Initialization
         super();
+
+        try {
+            connectToServer();
+        } catch (IOException e){
+            System.out.print("Can't connect");
+        }
 
         setSize(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -157,6 +169,7 @@ public class Lab4 extends JFrame{
         @Override
         public void mouseClicked(MouseEvent e) {
             Ponto newPonto = new Ponto(getRealX(e.getX(),R),getRealY(e.getY(),R));
+            sendPonto(newPonto);
             if (!findPonto(pontos,newPonto)) {
                 pontos.add(newPonto);
                 ((GraphPanel) e.getSource()).showPontoAnimated(newPonto, pontos, gsh);
@@ -214,6 +227,33 @@ public class Lab4 extends JFrame{
             if (added){
                 theGraphPanel.showPontoAnimated(newPonto,pontos,gsh);
             }
+        }
+    }
+
+    private void connectToServer() throws IOException {
+
+        serverSocket = new Socket("localhost",4444);
+
+        fromServerBuffer  = new
+                BufferedReader(new
+                InputStreamReader(serverSocket.getInputStream()));
+        toServerBuffer = new
+                PrintWriter(serverSocket.getOutputStream(),true);
+
+    }
+
+    private void disconnectFromServer() throws IOException{
+        fromServerBuffer.close();
+        toServerBuffer.close();
+        serverSocket.close();
+    }
+
+    private void sendPonto(Ponto p){
+        try {
+            toServerBuffer.println(p.toString());
+            System.out.print(fromServerBuffer.readLine());
+        } catch (IOException e){
+            System.out.println("Disconnected");
         }
     }
 

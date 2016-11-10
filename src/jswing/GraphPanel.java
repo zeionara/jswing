@@ -2,6 +2,11 @@ package jswing;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.Set;
 
 public class GraphPanel extends JPanel {
@@ -116,9 +121,15 @@ public class GraphPanel extends JPanel {
             g.setColor(OUTER_POINT_COLOR);
         }
 
+        String[] msgs = {"Hello WOrld"};
+
+
+
         g.fillOval((int)p.getGraphX(gsh.getR())-SIZE_OF_POINT,(int)p.getGraphY(gsh.getR())-SIZE_OF_POINT,SIZE_OF_POINT*2,SIZE_OF_POINT*2);
         return inArea;
     }
+
+
 
     private boolean isPontoOnGraph(Ponto p, double R){
         return (p.getGraphX(R) >= 0) &&
