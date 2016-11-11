@@ -1,5 +1,8 @@
 package jswing;
 
+import localization.Eng;
+
+import javax.naming.NameNotFoundException;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -12,6 +15,8 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class Lab4 extends JFrame{
+    Class localization;
+
     private static final int DEFAULT_WINDOW_WIDTH = 1024;
     private static final int DEFAULT_WINDOW_HEIGHT = 480;
     private static final double DEFAULT_R = 10d;
@@ -40,6 +45,11 @@ public class Lab4 extends JFrame{
     {
         // Initialization
         super();
+        try {
+            localization = Class.forName("localization.Serb");
+        }catch (ClassNotFoundException e){
+            e.printStackTrace();
+        }
 
         try {
             connectToServer();
@@ -50,7 +60,7 @@ public class Lab4 extends JFrame{
         setSize(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setTitle("Fourth Lab");
+        setTitle(Eng.TITLE);
         setResizable(false);
 
         JPanel theMainPanel = new JPanel();
@@ -65,7 +75,14 @@ public class Lab4 extends JFrame{
         JPanel thePanelPoint = newPanelFlowLeft();
 
         //UI components for x
-        JLabel xLabel = new JLabel("Please, select x :");
+        JLabel xLabel = null;
+        try {
+                xLabel = new JLabel(localization.getField("SELECT_X").get(null).toString());
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
         thePanelX.add(xLabel);
 
         xComboBox = getComboBoxForX();
@@ -73,7 +90,14 @@ public class Lab4 extends JFrame{
         theMainPanel.add(thePanelX);
 
         //UI components for y
-        JLabel yLabel = new JLabel("Please, select y :");
+        JLabel yLabel = null;
+        try {
+            yLabel = new JLabel(localization.getField("SELECT_Y").get(null).toString());
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
         thePanelY.add(yLabel);
 
         yCheckBoxes = getCheckBoxesForY();
@@ -84,7 +108,7 @@ public class Lab4 extends JFrame{
         theMainPanel.add(thePanelY);
 
         //UI components for R
-        JLabel rLabel = new JLabel("Please, select R :");
+        JLabel rLabel = new JLabel(Eng.SELECT_R);
         thePanelR.add(rLabel);
 
         rSpinner = getSpinnerForR();
@@ -93,7 +117,7 @@ public class Lab4 extends JFrame{
         theMainPanel.add(thePanelR);
 
         //UI components for point coordinates
-        JLabel pLabel = new JLabel("Selected point :");
+        JLabel pLabel = new JLabel(Eng.SELECTED_POINT);
         thePanelPoint.add(pLabel);
 
         pTextField = getTextFieldForP();

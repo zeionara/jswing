@@ -47,7 +47,7 @@ public class Client {
 
     public void sendFloat(float dataf, InetAddress address, int port){
         assert(socket.isConnected());
-        byte[] data = floatToByteArray(dataf);
+        byte[] data = ByteArrayConverter.floatToByteArray(dataf);
         DatagramPacket datagramPacket = new DatagramPacket(data,data.length,address,port);
         try {
             socket.send(datagramPacket);
@@ -59,8 +59,8 @@ public class Client {
 
     public void sendPonto(Ponto p, InetAddress address, int port){
         assert(socket.isConnected());
-        byte[] dataX = floatToByteArray((float)p.getX());
-        byte[] dataY = floatToByteArray((float)p.getY());
+        byte[] dataX = ByteArrayConverter.floatToByteArray((float)p.getX());
+        byte[] dataY = ByteArrayConverter.floatToByteArray((float)p.getY());
         DatagramPacket datagramPacketX = new DatagramPacket(dataX,dataX.length,address,port);
         DatagramPacket datagramPacketY = new DatagramPacket(dataY,dataY.length,address,port);
         try {
@@ -73,6 +73,20 @@ public class Client {
         }
     }
 
+    public int receiveInt(){
+        byte[] buf = new byte[4];
+        DatagramPacket packet = new DatagramPacket(buf, buf.length);
+        try {
+            socket.receive(packet);
+            buf = packet.getData();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return ByteArrayConverter.byteArrayToInt(buf);
+    }
+
+
     private InetAddress getAddress(){
         return address;
     }
@@ -81,13 +95,4 @@ public class Client {
         return port;
     }
 
-    private byte[] floatToByteArray(float myFloat){
-        int floatBits = Float.floatToIntBits(myFloat);
-        byte floatBytes[] = new byte[4];
-        floatBytes[0] = (byte)(floatBits >> 24);
-        floatBytes[1] = (byte)(floatBits >> 16);
-        floatBytes[2] = (byte)(floatBits >> 8);
-        floatBytes[3] = (byte)(floatBits);
-        return floatBytes;
-    }
 }

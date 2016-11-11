@@ -1,5 +1,7 @@
 package jswing;
 
+import localization.Eng;
+
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Set;
@@ -50,7 +52,7 @@ public class AnimationThread extends Thread{
         try{
             Thread.sleep(delay);
         } catch (InterruptedException e){
-            JOptionPane.showMessageDialog(null, "Error", "Animation thread interrupted", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, Eng.ERROR, Eng.ANIMATION_INTERRUPTED, JOptionPane.ERROR_MESSAGE);
         }
     }
 }

@@ -12,6 +12,9 @@ public class Server {
     private final int port;
     private InetAddress address;
 
+    private int clientport;
+    private InetAddress clientaddress;
+
     private Thread listenThread;
     private boolean running = false;
     private DatagramSocket socket;
@@ -42,7 +45,8 @@ public class Server {
 
     private void listen(){
         while(running){
-            System.out.println("received : "+receivePonto());
+            Thread processThread = new ProcessPontoThread(receivePonto(),receiveFloat(),clientaddress,clientport,socket);
+            processThread.start();
         }
     }
 
@@ -74,7 +78,11 @@ public class Server {
             e.printStackTrace();
         }
 
-        return byteArrayToFloat(buf);
+        clientaddress = packet.getAddress();
+        clientport = packet.getPort();
+        System.out.println("Client's : "+clientaddress+" "+clientport);
+
+        return ByteArrayConverter.byteArrayToFloat(buf);
     }
 
     private Ponto receivePonto(){
@@ -82,6 +90,7 @@ public class Server {
         byte[] bufY = new byte[4];
         DatagramPacket packetX = new DatagramPacket(bufX, bufX.length);
         DatagramPacket packetY = new DatagramPacket(bufY, bufY.length);
+
         try {
             socket.receive(packetX);
             bufX = packetX.getData();
@@ -94,7 +103,7 @@ public class Server {
             e.printStackTrace();
         }
 
-        return new Ponto(byteArrayToFloat(bufX),byteArrayToFloat(bufY));
+        return new Ponto(ByteArrayConverter.byteArrayToFloat(bufX),ByteArrayConverter.byteArrayToFloat(bufY));
     }
 
     private void process(DatagramPacket datagramPacket){
@@ -125,13 +134,5 @@ public class Server {
         return port;
     }
 
-    private float byteArrayToFloat(byte[] floatBytes){
-        int floatBits = 0;
-        floatBits += floatBytes[0] << 24;
-        floatBits += floatBytes[1] << 16;
-        floatBits += floatBytes[2] << 8;
-        floatBits += floatBytes[3];
-        float myFloat = Float.intBitsToFloat(floatBits);
-        return myFloat;
-    }
+
 }
