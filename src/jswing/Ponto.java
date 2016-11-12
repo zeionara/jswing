@@ -5,6 +5,9 @@ public class Ponto {
     private double x = 0;
     private double y = 0;
 
+    private boolean checked = false;
+    private boolean inside = false;
+
     public Ponto(double x, double y){
         this.x = x;
         this.y = y;
@@ -49,5 +52,24 @@ public class Ponto {
 
     public String toString(){
         return (x+" ; "+y);
+    }
+
+    //
+
+    public boolean isChecked(){
+        return checked;
+    }
+
+    public void checkOff(){
+        checked = false;
+    }
+
+    public void checkOn(boolean inSilhouette){
+        inside = inSilhouette;
+        checked = true;
+    }
+
+    public boolean isInSilhouette(){
+        return inside;
     }
 }

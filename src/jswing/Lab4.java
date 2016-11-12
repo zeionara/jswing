@@ -289,4 +289,8 @@ public class Lab4 extends JFrame{
         }
         return false;
     }
+
+    public double getR(){
+        return R;
+    }
 }
