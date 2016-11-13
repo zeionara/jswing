@@ -17,7 +17,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 public class Lab4 extends JFrame{
-    Class localization;
+    public static Class localization;
 
     private static final int DEFAULT_WINDOW_WIDTH = 1024;
     private static final int DEFAULT_WINDOW_HEIGHT = 480;
@@ -58,7 +58,16 @@ public class Lab4 extends JFrame{
         setSize(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setTitle(Eng.TITLE);
+
+        try {
+            setTitle(localization.getField("TITLE").get(null).toString());
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+
         setResizable(false);
 
         JPanel theMainPanel = new JPanel();
@@ -106,7 +115,16 @@ public class Lab4 extends JFrame{
         theMainPanel.add(thePanelY);
 
         //UI components for R
-        JLabel rLabel = new JLabel(Eng.SELECT_R);
+        JLabel rLabel = null;
+        try {
+            rLabel = new JLabel(localization.getField("SELECT_R").get(null).toString());
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
+
         thePanelR.add(rLabel);
 
         rSpinner = getSpinnerForR();
@@ -115,7 +133,15 @@ public class Lab4 extends JFrame{
         theMainPanel.add(thePanelR);
 
         //UI components for point coordinates
-        JLabel pLabel = new JLabel(Eng.SELECTED_POINT);
+        JLabel pLabel = null;
+        try {
+            pLabel = new JLabel(localization.getField("SELECTED_POINT").get(null).toString());
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
         thePanelPoint.add(pLabel);
 
         pTextField = getTextFieldForP();
@@ -183,7 +209,15 @@ public class Lab4 extends JFrame{
     private JTextField getTextFieldForP() {
         JTextField pTextField = new JTextField();
         pTextField.setEditable(false);
-        pTextField.setText("None");
+
+        try {
+            pTextField.setText(localization.getField("NONE").get(null).toString());
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
         pTextField.setPreferredSize(new Dimension(DEFAULT_ELEMENT_WIDTH*3,DEFAULT_ELEMENT_HEIGHT));
         return pTextField;
     }

@@ -12,4 +12,6 @@ public abstract class Serb {
     public static final String SELECT_Y = "Молимо одаберите y : ";
     public static final String SELECT_R = "Молимо одаберите R : ";
     public static final String SELECTED_POINT = "Изабрана тачка : ";
+
+    public static final String NONE = "Ниједан";
 }

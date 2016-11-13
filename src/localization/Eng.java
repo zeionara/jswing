@@ -12,4 +12,6 @@ public abstract class Eng {
     public static final String SELECT_Y = "Please, select y : ";
     public static final String SELECT_R = "Please, select R : ";
     public static final String SELECTED_POINT = "Selected point : ";
+
+    public static final String NONE = "None";
 }

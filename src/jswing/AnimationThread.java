@@ -49,7 +49,15 @@ public class AnimationThread extends Thread{
         try{
             Thread.sleep(delay);
         } catch (InterruptedException e){
-            JOptionPane.showMessageDialog(null, Eng.ERROR, Eng.ANIMATION_INTERRUPTED, JOptionPane.ERROR_MESSAGE);
+            try {
+                JOptionPane.showMessageDialog(null, Lab4.localization.getField("ERROR").get(null).toString(),
+                        Lab4.localization.getField("ANIMATION_INTERRUPTED").get(null).toString(), JOptionPane.ERROR_MESSAGE);
+            } catch (NoSuchFieldException err) {
+                err.printStackTrace();
+            } catch (IllegalAccessException err) {
+                err.printStackTrace();
+            }
+
         }
     }
 }
