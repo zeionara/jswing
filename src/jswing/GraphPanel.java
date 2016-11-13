@@ -21,6 +21,7 @@ public class GraphPanel extends JPanel {
     public static final int BLUE = 0x0000FF;
     public static final Color INNER_POINT_COLOR = Color.green;
     public static final Color OUTER_POINT_COLOR = Color.red;
+    public static final Color NOTCHECKED_POINT_COLOR = Color.gray;
 
     static {
         OFFSET_TO_CENTER = SIZE_OF_GRAPH/2;
@@ -97,35 +98,35 @@ public class GraphPanel extends JPanel {
 
     }
 
-    public void showPonto(Ponto p, GeneralSilhouette gsh){
-        if (isPontoOnGraph(p,gsh.getR())){
-            addPontoToGraph(p,getGraphics(),gsh);
+    public void showPonto(Ponto p, double R){
+        if (isPontoOnGraph(p,R)){
+            addPontoToGraph(p,getGraphics(),R);
         }
     }
 
-    public void showPontoAnimated(Ponto p, Set<Ponto> pontos, GeneralSilhouette gsh){
-        if (isPontoOnGraph(p,gsh.getR())){
+    public void showPontoAnimated(Ponto p, Set<Ponto> pontos,double R){
+        if (isPontoOnGraph(p,R)){
             //animation
-            if (addPontoToGraph(p,getGraphics(),gsh)){
-                new AnimationThread(this,pontos,gsh.getR(),gsh).start();
+            if (addPontoToGraph(p,getGraphics(),R)){
+                new AnimationThread(this,pontos,R).start();
             }
         }
     }
 
-    private boolean addPontoToGraph(Ponto p, Graphics g, GeneralSilhouette gsh){
+    private boolean addPontoToGraph(Ponto p, Graphics g, double R){
         boolean inArea = false;
-        if(gsh.checkPonto(p)){
-            g.setColor(INNER_POINT_COLOR);
-            inArea = true;
+        if (p.isChecked()) {
+            if (p.isInSilhouette()) {
+                g.setColor(INNER_POINT_COLOR);
+                inArea = true;
+            } else {
+                g.setColor(OUTER_POINT_COLOR);
+            }
         } else {
-            g.setColor(OUTER_POINT_COLOR);
+            g.setColor(NOTCHECKED_POINT_COLOR);
         }
 
-        String[] msgs = {"Hello WOrld"};
-
-
-
-        g.fillOval((int)p.getGraphX(gsh.getR())-SIZE_OF_POINT,(int)p.getGraphY(gsh.getR())-SIZE_OF_POINT,SIZE_OF_POINT*2,SIZE_OF_POINT*2);
+        g.fillOval((int)p.getGraphX(R)-SIZE_OF_POINT,(int)p.getGraphY(R)-SIZE_OF_POINT,SIZE_OF_POINT*2,SIZE_OF_POINT*2);
         return inArea;
     }
 

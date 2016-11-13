@@ -28,22 +28,26 @@ public class Channel {
         request.writeTo(out);
     }
 
-    public static Response receiveResponse(Socket socket){
-        Response response = null;
+    public static Response receiveResponse(Socket socket) throws SocketException{
+        Response response = new Response(0,false,0.0);
+        System.out.println("Connection closed : "+socket.isClosed());
         try {
             InputStream in = socket.getInputStream();
-            response.readFrom(in);
-        } catch (IOException e) {
+            response = Response.readFrom(in);
+        } catch (SocketException e){
+            throw e;
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
         return response;
     }
 
     public static Request receiveRequest(Socket socket){
-        Request request = null;
+        Request request = new Request(0.0,0.0,0.0);
         try {
             InputStream in = socket.getInputStream();
-            request.readFrom(in);
+            request = Request.readFrom(in);
         } catch (IOException e) {
             e.printStackTrace();
         }

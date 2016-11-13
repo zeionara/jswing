@@ -8,9 +8,19 @@ public class Ponto {
     private boolean checked = false;
     private boolean inside = false;
 
+    private boolean isfirstCorrectShowing = true;
+
     public Ponto(double x, double y){
         this.x = x;
         this.y = y;
+    }
+
+    public boolean isFirstCorrectShowing(){
+        return isfirstCorrectShowing;
+    }
+
+    public void showed(){
+        isfirstCorrectShowing = false;
     }
 
     public void setX(double x){

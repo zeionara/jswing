@@ -17,13 +17,10 @@ public class AnimationThread extends Thread{
 
     private double R;
 
-    private GeneralSilhouette gsh;
-
-    public AnimationThread(GraphPanel graphPanel, Set<Ponto> pontos, double R, GeneralSilhouette gsh){
+    public AnimationThread(GraphPanel graphPanel, Set<Ponto> pontos, double R){
         animatedGraphPanel = graphPanel;
         this.pontos = pontos;
         this.R = R;
-        this.gsh = gsh;
     }
 
     public void run(){
@@ -46,7 +43,7 @@ public class AnimationThread extends Thread{
         animatedGraphPanel.paint(animatedGraphPanel.getGraphics());
 
         for (Ponto ponto : pontos){
-            animatedGraphPanel.showPonto(ponto,gsh);
+            animatedGraphPanel.showPonto(ponto,R);
         }
 
         try{

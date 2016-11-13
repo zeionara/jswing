@@ -7,7 +7,9 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.Set;
 
 public class PontoCheckingSuperstructure {
@@ -16,6 +18,7 @@ public class PontoCheckingSuperstructure {
     Set<Ponto> pontos;
     Socket socket;
     SocketAddress socketAddress;
+    boolean changesShowed = true;
 
     public PontoCheckingSuperstructure(Set<Ponto> pontos, SocketAddress socketAddress, Lab4 lab4){
         this.pontos = pontos;
@@ -29,21 +32,50 @@ public class PontoCheckingSuperstructure {
 
     private void circuloInferni(){
         while(true){
-            pontos.stream().filter((Ponto p) -> !p.isChecked()).forEach((Ponto p) -> {
-                Request request;
-                request = new Request(p.getX(),p.getY(), lab4.getR());
-                boolean sent = false;
-                do{
+            try {
+                pontos.stream().filter((Ponto p) -> !p.isChecked()).forEach((Ponto p) -> {
+                    System.out.println("Checking...");
+                    Request request;
+                    request = new Request(p.getX(), p.getY(), lab4.getR());
+                    boolean sent = false;
+                    do {
+                        try {
+                            System.out.println("Trying to send request...");
+
+                            Channel.sendRequest(request, socket);
+                            sent = true;
+                            System.out.println("Successful!");
+                        } catch (SocketException e) {
+                            System.out.println("Failed!");
+                            tryConnect();
+                        }
+                    } while (!sent);
+                    System.out.println("Waiting for response...");
+                    Response response = null;
                     try {
-                        Channel.sendRequest(request,socket);
-                        sent = true;
+                        response = Channel.receiveResponse(socket);
                     } catch (SocketException e) {
-                        tryConnect();
+                        System.out.println("Unable to receive response");
+                        return;
                     }
-                    Response response = Channel.receiveResponse(socket);
-                }while(!sent);
-            });
+                    System.out.println("Response submitted!");
+                    p.checkOn(response.getSupremimIudicium());
+                    setChangesShowed(false);
+                    System.out.println("Checked! For the " + p.getX() + " " + p.getY() + " it is " + response.getSupremimIudicium());
+                });
+                if (!changesShowed){
+                    lab4.redrawPontos();
+                    changesShowed = true;
+                }
+
+            } catch (ConcurrentModificationException e){
+                System.out.println("Collection changed until iterating");
+            }
         }// while
+    }
+
+    private void setChangesShowed(boolean value){
+        changesShowed = value;
     }
 
     private void tryConnect(){
@@ -61,11 +93,17 @@ public class PontoCheckingSuperstructure {
             }
             socket = new Socket();
             try {
-                socket.connect(socketAddress,1000);
-                connected = true;
+                System.out.println("Trying to connect...");
+                try {
+                    socket.connect(socketAddress, 1000);
+                    connected = true;
+                } catch (SocketTimeoutException e){
+                    System.out.println("Connection timed out...");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } while(!connected);
+        System.out.println("Connected!");
     }
 }

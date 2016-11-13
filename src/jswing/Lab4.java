@@ -1,6 +1,8 @@
 package jswing;
 
 import localization.Eng;
+import net.PontoCheckingSuperstructure;
+import net.ServerManager;
 
 import javax.naming.NameNotFoundException;
 import javax.swing.*;
@@ -9,7 +11,7 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
-import java.net.Socket;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -31,7 +33,9 @@ public class Lab4 extends JFrame{
 
     private Double R;
     private GeneralSilhouette gsh;
-    private Set<Ponto> pontos = new LinkedHashSet<>();
+    private volatile Set<Ponto> pontos = new LinkedHashSet<>();
+
+    PontoCheckingSuperstructure pcss = null;
 
     private BufferedReader fromServerBuffer = null;
     private PrintWriter toServerBuffer = null;
@@ -49,12 +53,6 @@ public class Lab4 extends JFrame{
             localization = Class.forName("localization.Serb");
         }catch (ClassNotFoundException e){
             e.printStackTrace();
-        }
-
-        try {
-            connectToServer();
-        } catch (IOException e){
-            System.out.print("Can't connect");
         }
 
         setSize(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
@@ -134,7 +132,16 @@ public class Lab4 extends JFrame{
         add(theMainPanel);
 
         setVisible(true);
+
+        //
+
+        try {
+            pcss = new PontoCheckingSuperstructure(pontos,new InetSocketAddress(InetAddress.getByName("127.0.0.1"),6666),this);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
+
 
     private JPanel newPanelFlowLeft(){
         JPanel theNewPanel = new JPanel();
@@ -193,10 +200,9 @@ public class Lab4 extends JFrame{
         @Override
         public void mouseClicked(MouseEvent e) {
             Ponto newPonto = new Ponto(getRealX(e.getX(),R),getRealY(e.getY(),R));
-            sendPonto(newPonto);
             if (!findPonto(pontos,newPonto)) {
                 pontos.add(newPonto);
-                ((GraphPanel) e.getSource()).showPontoAnimated(newPonto, pontos, gsh);
+                ((GraphPanel) e.getSource()).showPontoAnimated(newPonto, pontos, R);
                 pTextField.setText(newPonto.toString());
             }
         }
@@ -209,8 +215,20 @@ public class Lab4 extends JFrame{
             R = ((Integer)((JSpinner)e.getSource()).getModel().getValue()).doubleValue();
             gsh = new GeneralSilhouette(R);
             for (Ponto ponto : pontos){
-                theGraphPanel.showPonto(ponto,gsh);
+                ponto.checkOff();
+                theGraphPanel.showPonto(ponto,R);
             }
+        }
+    }
+
+    public void redrawPontos(){
+        theGraphPanel.paint(theGraphPanel.getGraphics());
+        for (Ponto ponto : pontos){
+            if (ponto.isFirstCorrectShowing()){
+                theGraphPanel.showPontoAnimated(ponto,pontos,R);
+                ponto.showed();
+            }
+            theGraphPanel.showPonto(ponto,R);
         }
     }
 
@@ -225,7 +243,7 @@ public class Lab4 extends JFrame{
             if (((JCheckBox)e.getSource()).isSelected() && !findPonto(pontos,newPonto)){
                     pontos.add(newPonto);
                     pTextField.setText(newPonto.toString());
-                    theGraphPanel.showPontoAnimated(newPonto,pontos,gsh);
+                    theGraphPanel.showPontoAnimated(newPonto,pontos,R);
             }
         }
     }
@@ -249,35 +267,8 @@ public class Lab4 extends JFrame{
                 }
             }
             if (added){
-                theGraphPanel.showPontoAnimated(newPonto,pontos,gsh);
+                theGraphPanel.showPontoAnimated(newPonto,pontos,R);
             }
-        }
-    }
-
-    private void connectToServer() throws IOException {
-
-        serverSocket = new Socket("localhost",4444);
-
-        fromServerBuffer  = new
-                BufferedReader(new
-                InputStreamReader(serverSocket.getInputStream()));
-        toServerBuffer = new
-                PrintWriter(serverSocket.getOutputStream(),true);
-
-    }
-
-    private void disconnectFromServer() throws IOException{
-        fromServerBuffer.close();
-        toServerBuffer.close();
-        serverSocket.close();
-    }
-
-    private void sendPonto(Ponto p){
-        try {
-            toServerBuffer.println(p.toString());
-            System.out.print(fromServerBuffer.readLine());
-        } catch (IOException e){
-            System.out.println("Disconnected");
         }
     }
 
@@ -292,5 +283,11 @@ public class Lab4 extends JFrame{
 
     public double getR(){
         return R;
+    }
+
+    public void checkOffAll(){
+        for(Ponto p : pontos){
+            p.checkOff();
+        }
     }
 }

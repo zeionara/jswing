@@ -1,13 +1,9 @@
 package net;
 
 import java.io.*;
+import java.net.SocketException;
 
-public class Request {
-
-
-    public static Request toRequest(InputStream in){
-        return new Request(0.0,0.0,0.0);
-    }
+public class Request implements Serializable{
 
     private double X;
     private double Y;
@@ -21,16 +17,19 @@ public class Request {
         hash = (int)(x+y+r);
     }
 
-    public void writeTo(OutputStream out){
+    public void writeTo(OutputStream out) throws SocketException{
         try {
             ObjectOutputStream serializer = new ObjectOutputStream(out);
             serializer.writeObject(this);
+        } catch (SocketException e){
+            System.out.println("Connection reset");
+            throw e;
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public Request readFrom(InputStream in){
+    public static Request readFrom(InputStream in){
         Request request = null;
         try {
             ObjectInputStream deserializer = new ObjectInputStream(in);

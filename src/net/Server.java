@@ -11,26 +11,24 @@ public class Server {
 
     private boolean running = false;
 
-    public Server(String addressName, int port) {
+    public Server(int port) {
         this.port = port;
+        try {
+            serverSocket = new ServerSocket(port);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void start(){
-        try {
-            serverSocket = new ServerSocket(port);
-
             running = true;
             listenThread = new Thread(() -> listen());
             listenThread.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
     }
 
     public void stop(){
         running = false;
-        closeServerSocket();
+        //closeServerSocket();
     }
 
     private void closeServerSocket(){
@@ -55,5 +53,9 @@ public class Server {
 
     public int getPort(){
         return port;
+    }
+
+    public SocketAddress getSocketAddress(){
+        return serverSocket.getLocalSocketAddress();
     }
 }

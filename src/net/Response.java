@@ -1,6 +1,7 @@
 package net;
 
 import java.io.*;
+import java.net.SocketException;
 
 /**
  * Created by Zerbs on 12.11.2016.
@@ -19,12 +20,16 @@ public class Response implements Serializable{
         }
     }
 
-    public Response readFrom(InputStream in){
+    public static Response readFrom(InputStream in) throws SocketException{
         Response response = null;
         try {
             ObjectInputStream deserializer = new ObjectInputStream(in);
             response = (Response)deserializer.readObject();
-        } catch (IOException e) {
+        } catch (SocketException e){
+            System.out.println("Connection reset");
+            throw e;
+        }
+        catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
@@ -38,5 +43,8 @@ public class Response implements Serializable{
         this.hash = hash;
     }
 
+    public boolean getSupremimIudicium(){
+        return supremumIudicium;
+    }
 
 }

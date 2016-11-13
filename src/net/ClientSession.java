@@ -23,11 +23,14 @@ public class ClientSession implements Runnable{
     public void run() {
         Request request;
         while(true) {
-            request = Request.toRequest(in);
+            System.out.println("[Server] Receiving request...");
+            request = Channel.receiveRequest(socket);
+            System.out.println("[Server] Received : "+request.getX()+" "+request.getY());
             if (request == null){
                 continue;
             }
-            new ClientProcess(socket,request);
+            System.out.println("[Server] Processing request...");
+            new Thread(new ClientProcess(socket,request)).start();
         }
     }
 }
