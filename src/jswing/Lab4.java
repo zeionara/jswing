@@ -1,5 +1,7 @@
 package jswing;
 
+import management.SilhouetteAgent;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -26,6 +28,8 @@ public class Lab4 extends JFrame{
     private GeneralSilhouette gsh;
     private Set<Ponto> pontos = new LinkedHashSet<>();
 
+    private SilhouetteAgent silhouetteAgent;
+
     public static void main(String[] args) {
         new Lab4();
     }
@@ -34,6 +38,12 @@ public class Lab4 extends JFrame{
     {
         // Initialization
         super();
+
+        try {
+            silhouetteAgent = new SilhouetteAgent();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         setSize(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -156,8 +166,18 @@ public class Lab4 extends JFrame{
     private class GraphPanelMouseListener extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent e) {
+
+            try {
+                silhouetteAgent.GraphPanelClicked();
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+
             Ponto newPonto = new Ponto(getRealX(e.getX(),R),getRealY(e.getY(),R));
             if (!findPonto(pontos,newPonto)) {
+
+                notifyAgentAboutNewPonto(newPonto);
+
                 pontos.add(newPonto);
                 ((GraphPanel) e.getSource()).showPontoAnimated(newPonto, pontos, gsh);
                 pTextField.setText(newPonto.toString());
@@ -170,6 +190,9 @@ public class Lab4 extends JFrame{
         public void stateChanged(ChangeEvent e) {
             theGraphPanel.paint(theGraphPanel.getGraphics());
             R = ((Integer)((JSpinner)e.getSource()).getModel().getValue()).doubleValue();
+
+            notifyAgentAboutChangingRadius();
+
             gsh = new GeneralSilhouette(R);
             for (Ponto ponto : pontos){
                 theGraphPanel.showPonto(ponto,gsh);
@@ -186,6 +209,9 @@ public class Lab4 extends JFrame{
             Ponto newPonto = new Ponto(x,y);
 
             if (((JCheckBox)e.getSource()).isSelected() && !findPonto(pontos,newPonto)){
+
+                    notifyAgentAboutNewPonto(newPonto);
+
                     pontos.add(newPonto);
                     pTextField.setText(newPonto.toString());
                     theGraphPanel.showPontoAnimated(newPonto,pontos,gsh);
@@ -206,6 +232,9 @@ public class Lab4 extends JFrame{
                 y = Double.parseDouble(ycheckBox.getText());
                 newPonto = new Ponto(x,y);
                 if (ycheckBox.isSelected() && !findPonto(pontos,newPonto)) {
+
+                    notifyAgentAboutNewPonto(newPonto);
+
                     pontos.add(newPonto);
                     added = true;
                     pTextField.setText(newPonto.toString());
@@ -224,5 +253,21 @@ public class Lab4 extends JFrame{
             }
         }
         return false;
+    }
+
+    private void notifyAgentAboutNewPonto(Ponto newPonto){
+        try {
+            silhouetteAgent.PontoAdded(newPonto,new GeneralSilhouette(R));
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
+    }
+
+    private void notifyAgentAboutChangingRadius(){
+        try {
+            silhouetteAgent.RadiusChanged(pontos,new GeneralSilhouette(R));
+        } catch (Exception e1) {
+            e1.printStackTrace();
+        }
     }
 }
