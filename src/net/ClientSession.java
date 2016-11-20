@@ -25,10 +25,10 @@ public class ClientSession implements Runnable{
         while(true) {
             System.out.println("[Server] Receiving request...");
             request = Channel.receiveRequest(socket);
-            System.out.println("[Server] Received : "+request.getX()+" "+request.getY());
             if (request == null){
-                continue;
+                return;
             }
+            System.out.println("[Server] Received : "+request.getX()+" "+request.getY());
             System.out.println("[Server] Processing request...");
             new Thread(new ClientProcess(socket,request)).start();
         }

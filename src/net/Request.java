@@ -35,7 +35,7 @@ public class Request implements Serializable{
             ObjectInputStream deserializer = new ObjectInputStream(in);
             request = (Request)deserializer.readObject();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("[Server] Client disconnected");
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }

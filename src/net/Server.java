@@ -6,7 +6,6 @@ import java.net.*;
 public class Server {
     private final int port;
     private ServerSocket serverSocket;
-    private Socket socket;
     private Thread listenThread;
 
     private boolean running = false;
@@ -46,7 +45,7 @@ public class Server {
                 socket = serverSocket.accept();
                 new Thread(new ClientSession(socket)).start();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.out.println("[Server] Client disconnected");
             }
         }
     }

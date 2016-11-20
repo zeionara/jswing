@@ -49,7 +49,7 @@ public class Channel {
             InputStream in = socket.getInputStream();
             request = Request.readFrom(in);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("[Server] Client disconnected");
         }
         return request;
     }

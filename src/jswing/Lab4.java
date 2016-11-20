@@ -1,6 +1,5 @@
 package jswing;
 
-import localization.Eng;
 import net.PontoCheckingSuperstructure;
 import net.ServerManager;
 
@@ -14,10 +13,12 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.PropertyResourceBundle;
 import java.util.Set;
 
 public class Lab4 extends JFrame{
-    public static Class localization;
+    //public static Class localization;
+    public static PropertyResourceBundle localization = null;
 
     private static final int DEFAULT_WINDOW_WIDTH = 1024;
     private static final int DEFAULT_WINDOW_HEIGHT = 480;
@@ -45,28 +46,24 @@ public class Lab4 extends JFrame{
         new Lab4();
     }
 
+    static {
+        try {
+            localization = new PropertyResourceBundle(new FileReader("L10n\\Resources_serb.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Lab4()
     {
         // Initialization
         super();
-        try {
-            localization = Class.forName("localization.Serb");
-        }catch (ClassNotFoundException e){
-            e.printStackTrace();
-        }
 
         setSize(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        try {
-            setTitle(localization.getField("TITLE").get(null).toString());
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
+        setTitle(localization.getString("title"));
 
         setResizable(false);
 
@@ -83,13 +80,7 @@ public class Lab4 extends JFrame{
 
         //UI components for x
         JLabel xLabel = null;
-        try {
-                xLabel = new JLabel(localization.getField("SELECT_X").get(null).toString());
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        xLabel = new JLabel(localization.getString("select_x"));
         thePanelX.add(xLabel);
 
         xComboBox = getComboBoxForX();
@@ -98,13 +89,7 @@ public class Lab4 extends JFrame{
 
         //UI components for y
         JLabel yLabel = null;
-        try {
-            yLabel = new JLabel(localization.getField("SELECT_Y").get(null).toString());
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        yLabel = new JLabel(localization.getString("select_y"));
         thePanelY.add(yLabel);
 
         yCheckBoxes = getCheckBoxesForY();
@@ -116,13 +101,7 @@ public class Lab4 extends JFrame{
 
         //UI components for R
         JLabel rLabel = null;
-        try {
-            rLabel = new JLabel(localization.getField("SELECT_R").get(null).toString());
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        rLabel = new JLabel(localization.getString("select_r"));
 
 
         thePanelR.add(rLabel);
@@ -134,13 +113,7 @@ public class Lab4 extends JFrame{
 
         //UI components for point coordinates
         JLabel pLabel = null;
-        try {
-            pLabel = new JLabel(localization.getField("SELECTED_POINT").get(null).toString());
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        pLabel = new JLabel(localization.getString("selected_point"));
 
         thePanelPoint.add(pLabel);
 
@@ -210,13 +183,7 @@ public class Lab4 extends JFrame{
         JTextField pTextField = new JTextField();
         pTextField.setEditable(false);
 
-        try {
-            pTextField.setText(localization.getField("NONE").get(null).toString());
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        pTextField.setText(localization.getString("none"));
 
         pTextField.setPreferredSize(new Dimension(DEFAULT_ELEMENT_WIDTH*3,DEFAULT_ELEMENT_HEIGHT));
         return pTextField;
