@@ -20,11 +20,10 @@ public class ClientProcess implements Runnable{
         double X = request.getX();
         double Y = request.getY();
         double R = request.getR();
-        int hash = request.getHash();
 
         System.out.println("[Server] Checking ponto in request...");
         boolean supremumIudicium = new GeneralSilhouette(R).checkPonto(new Ponto(X,Y));
-        Response response = new Response(hash,supremumIudicium,R);
+        Response response = new Response(supremumIudicium);
 
         Channel.sendResponse(response, socket);
     }

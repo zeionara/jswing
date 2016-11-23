@@ -29,7 +29,7 @@ public class Channel {
     }
 
     public static Response receiveResponse(Socket socket) throws SocketException{
-        Response response = new Response(0,false,0.0);
+        Response response = new Response(false);
         System.out.println("Connection closed : "+socket.isClosed());
         try {
             InputStream in = socket.getInputStream();

@@ -8,7 +8,6 @@ import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Set;
 
@@ -59,9 +58,9 @@ public class PontoCheckingSuperstructure {
                         return;
                     }
                     System.out.println("Response submitted!");
-                    p.checkOn(response.getSupremimIudicium());
+                    p.checkOn(response.getSupremumIudicium());
                     setChangesShowed(false);
-                    System.out.println("Checked! For the " + p.getX() + " " + p.getY() + " it is " + response.getSupremimIudicium());
+                    System.out.println("Checked! For the " + p.getX() + " " + p.getY() + " it is " + response.getSupremumIudicium());
                 });
                 if (!changesShowed){
                     lab4.redrawPontos();

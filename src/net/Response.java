@@ -3,13 +3,8 @@ package net;
 import java.io.*;
 import java.net.SocketException;
 
-/**
- * Created by Zerbs on 12.11.2016.
- */
 public class Response implements Serializable{
     private boolean supremumIudicium;
-    private double R;
-    private int hash;
 
     public void writeTo(OutputStream out){
         try {
@@ -37,13 +32,11 @@ public class Response implements Serializable{
         return response;
     }
 
-    public Response(int hash, boolean supremumIudicium, double R){
-        this.R = R;
+    public Response(boolean supremumIudicium){
         this.supremumIudicium = supremumIudicium;
-        this.hash = hash;
     }
 
-    public boolean getSupremimIudicium(){
+    public boolean getSupremumIudicium(){
         return supremumIudicium;
     }
 

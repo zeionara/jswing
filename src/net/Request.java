@@ -8,13 +8,11 @@ public class Request implements Serializable{
     private double X;
     private double Y;
     private double R;
-    private int hash;
 
     public Request(double x, double y, double r){
         X = x;
         Y = y;
         R = r;
-        hash = (int)(x+y+r);
     }
 
     public void writeTo(OutputStream out) throws SocketException{
@@ -52,10 +50,6 @@ public class Request implements Serializable{
 
     public double getR(){
         return R;
-    }
-
-    public int getHash(){
-        return hash;
     }
 
 }
