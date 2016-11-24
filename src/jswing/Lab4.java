@@ -19,7 +19,7 @@ import java.util.Set;
 public class Lab4 extends JFrame{
     //public static Class localization;
     public static PropertyResourceBundle localization = null;
-
+    private static JLabel pLabel = null;
     private static final int DEFAULT_WINDOW_WIDTH = 1024;
     private static final int DEFAULT_WINDOW_HEIGHT = 480;
     private static final double DEFAULT_R = 10d;
@@ -27,10 +27,15 @@ public class Lab4 extends JFrame{
     private static final int DEFAULT_ELEMENT_HEIGHT = 20;
 
     private JComboBox<Double> xComboBox;    //For entering x
+    private JComboBox<String> langComboBox;    //For entering x
     private ArrayList<JCheckBox> yCheckBoxes;   //For entering y
     private JSpinner rSpinner;  //For entering r
     private JTextField pTextField;  //For showing ponto
     private GraphPanel theGraphPanel;   //For showing graph
+
+    private JLabel xLabel;
+    private JLabel yLabel;
+    private JLabel rLabel;
 
     private Double R;
     private GeneralSilhouette gsh;
@@ -48,7 +53,7 @@ public class Lab4 extends JFrame{
 
     static {
         try {
-            localization = new PropertyResourceBundle(new FileReader("L10n\\Resources_serb.properties"));
+            localization = new PropertyResourceBundle(new FileReader("L10n\\Resources_eng.properties"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -79,7 +84,11 @@ public class Lab4 extends JFrame{
         JPanel thePanelPoint = newPanelFlowLeft();
 
         //UI components for x
-        JLabel xLabel = null;
+
+        langComboBox = getComboBoxForLang();
+        thePanelX.add(langComboBox);
+        theMainPanel.add(thePanelX);
+
         xLabel = new JLabel(localization.getString("select_x"));
         thePanelX.add(xLabel);
 
@@ -87,8 +96,10 @@ public class Lab4 extends JFrame{
         thePanelX.add(xComboBox);
         theMainPanel.add(thePanelX);
 
+
+
         //UI components for y
-        JLabel yLabel = null;
+
         yLabel = new JLabel(localization.getString("select_y"));
         thePanelY.add(yLabel);
 
@@ -100,7 +111,7 @@ public class Lab4 extends JFrame{
         theMainPanel.add(thePanelY);
 
         //UI components for R
-        JLabel rLabel = null;
+
         rLabel = new JLabel(localization.getString("select_r"));
 
 
@@ -112,7 +123,7 @@ public class Lab4 extends JFrame{
         theMainPanel.add(thePanelR);
 
         //UI components for point coordinates
-        JLabel pLabel = null;
+
         pLabel = new JLabel(localization.getString("selected_point"));
 
         thePanelPoint.add(pLabel);
@@ -154,6 +165,15 @@ public class Lab4 extends JFrame{
         jCB.setFont(new Font("Calibri",Font.PLAIN,12));
         jCB.setPreferredSize(new Dimension(DEFAULT_ELEMENT_WIDTH,DEFAULT_ELEMENT_HEIGHT));
         jCB.addActionListener(new ComboBoxListener());
+        return jCB;
+    }
+
+    private javax.swing.JComboBox<String> getComboBoxForLang() {
+        String[] langs = {"eng","serb"};
+        JComboBox<String> jCB = new javax.swing.JComboBox<>(langs);
+        jCB.setFont(new Font("Calibri",Font.PLAIN,12));
+        jCB.setPreferredSize(new Dimension(DEFAULT_ELEMENT_WIDTH/2,DEFAULT_ELEMENT_HEIGHT));
+        jCB.addActionListener(new ComboBoxLangListener());
         return jCB;
     }
 
@@ -270,6 +290,37 @@ public class Lab4 extends JFrame{
             if (added){
                 theGraphPanel.showPontoAnimated(newPonto,pontos,R);
             }
+        }
+    }
+
+    private class ComboBoxLangListener implements ActionListener{
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            boolean flag = false;
+            if (pTextField.getText().equals(localization.getString("none"))){
+                flag = true;
+            }
+            if(((JComboBox)e.getSource()).getModel().getSelectedItem().equals("serb")){
+                try {
+                    localization = new PropertyResourceBundle(new FileReader("L10n\\Resources_serb.properties"));
+                } catch (IOException e2) {
+                    e2.printStackTrace();
+                }
+            } else {
+                try {
+                    localization = new PropertyResourceBundle(new FileReader("L10n\\Resources_eng.properties"));
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+            setTitle(localization.getString("title"));
+            xLabel.setText(localization.getString("select_x"));
+            yLabel.setText(localization.getString("select_y"));
+            rLabel.setText(localization.getString("select_r"));
+            if (flag) {
+                pTextField.setText(localization.getString("none"));
+            }
+            pLabel = new JLabel(localization.getString("selected_point"));
         }
     }
 

@@ -92,9 +92,9 @@ public class PontoCheckingSuperstructure {
             }
             socket = new Socket();
             try {
-                System.out.println("Trying to connect...");
+                System.out.println("Trying to connect to "+socketAddress+" ...");
                 try {
-                    socket.connect(socketAddress, 1000);
+                    socket.connect(socketAddress, 2000);
                     connected = true;
                 } catch (SocketTimeoutException e){
                     System.out.println("Connection timed out...");

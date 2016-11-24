@@ -1,7 +1,5 @@
 package jswing;
 
-import localization.Eng;
-
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Set;

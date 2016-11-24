@@ -54,7 +54,7 @@ public class Server {
         return port;
     }
 
-    public SocketAddress getSocketAddress(){
-        return serverSocket.getLocalSocketAddress();
+    public InetAddress getSocketAddress(){
+        return serverSocket.getInetAddress();
     }
 }
